@@ -66,16 +66,16 @@ quickSort PROC,
 	loww:DWORD,
 	highh:DWORD
 
-	LOCAL pi:DWORD
-	MOV eax, loww
-	CMP eax, highh
-	JGE breakk
-	INVOKE partition, pArray, loww, highh
-	MOV pi, eax
-	DEC pi
-	INVOKE quickSort, pArray, loww, pi
-	ADD pi, 2
-	INVOKE quickSort, pArray, pi, highh
+LOCAL pi:DWORD
+MOV eax, loww
+CMP eax, highh
+JGE breakk
+INVOKE partition, pArray, loww, highh
+MOV pi, eax
+DEC pi
+INVOKE quickSort, pArray, loww, pi
+ADD pi, 2
+INVOKE quickSort, pArray, pi, highh
 
 breakk:
 
@@ -96,6 +96,7 @@ call readint
 mov arr[esi],eax
 add esi,4
 loop the
+RECALL:
 mov ecx,6
 mov edx,offset msg
 that:
@@ -118,6 +119,8 @@ cmp eax,5
 je callshell
 cmp eax,6
 je callinsertion
+MOV ECX,6
+jmp RECALL
 
 callshell:
 mov ebx,10
@@ -155,7 +158,6 @@ dec edx
 
 call MergeSort
 done:
-
 mov esi, offset arr
 mov ecx, lengthof arr
 call crlf
@@ -177,8 +179,6 @@ call crlf
 
 exit
 main ENDP
-
-
 
 
 MergeSort PROC
@@ -298,14 +298,12 @@ loop finalLoop
 outsideFinal:
 ret
 DMerge ENDP
+
 ShellSort PROC 
 
 local gap:DWORD
 local len:DWORD
 local temp:DWORD
-
-
-
 
 mov edx,0
 mov eax,ebx
@@ -317,60 +315,49 @@ mov gap,eax
 mov eax,0
 mov ecx,0
 mov edi,esi
-
 GAPLOOP:
 
-	mov eax,gap
+mov eax,gap
 
-	INNERLOOP:
-	
-		mov ebx,[esi + eax * 4]
-		mov temp,ebx
-		mov edx,eax
+INNERLOOP:
+mov ebx,[esi + eax * 4]
+mov temp,ebx
+mov edx,eax
 
-		FORLOOP3:
+FORLOOP3:
+cmp edx,gap
+jnae OUTOFFORLOOP3
 
-			cmp edx,gap
-			jnae OUTOFFORLOOP3
+mov ebx,edx
+sub ebx,gap
+mov ebx,[esi + ebx * 4]
+cmp ebx,temp
+jl OUTOFFORLOOP3
 
-			mov ebx,edx
-			sub ebx,gap
-			mov ebx,[esi + ebx * 4]
-			cmp ebx,temp
-			jl OUTOFFORLOOP3
+mov [edi + edx * 4],ebx
+sub edx,gap
+loop FORLOOP3
 
-			mov [edi + edx * 4],ebx
-			sub edx,gap
+OUTOFFORLOOP3:
+mov ebx,temp
+mov [esi + edx * 4],ebx
+inc eax
+cmp eax,len
+jl INNERLOOP
 
-		loop FORLOOP3
+mov edx,0
+mov eax,gap
+mov ebx,2
+div ebx
+mov gap,eax
+cmp gap,0
 
-		OUTOFFORLOOP3:
-
-			mov ebx,temp
-			mov [esi + edx * 4],ebx
-			inc eax
-			cmp eax,len
-
-	jl INNERLOOP
-
-	mov edx,0
-	mov eax,gap
-	mov ebx,2
-	div ebx
-	mov gap,eax
-	cmp gap,0
-
-	je FINISH
-
+je FINISH
 jne GAPLOOP
 
 FINISH:
-
-
 ret 
 ShellSort endp
-
-
 
 
 BubbleSort proc
@@ -403,8 +390,6 @@ jmp continueLoop
 endProgram:
 ret 
 BubbleSort ENDP
-
-
 
 
 Insertion_sort PROC USES eax ecx edx
@@ -452,7 +437,6 @@ loop D1
 return:
 ret
 Insertion_sort ENDP
-
 
 
 
